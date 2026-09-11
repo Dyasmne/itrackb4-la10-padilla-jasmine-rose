@@ -9,12 +9,12 @@ class MovieController extends Controller
     private function getMovies()
     {
         return [
-            ['id' => 1,'title' => 'Avengers: Endgame','genre' => 'Action','rating' => 8.4],
-            ['id' => 2,'title' => 'Spider-Man: No Way Home', 'genre' => 'Action','rating' => 8.2],
-            ['id' => 3,'title' => 'Inside Out','genre' => 'Animation','rating' => 8.1],
-            ['id' => 4,'title' => 'Coco','genre' => 'Animation','rating' => 8.4],
-            ['id' => 5,'title' => 'Interstellar','genre' => 'Sci-Fi','rating' => 8.7],
-            ['id' => 6,'title' => 'The Lion King','genre' => 'Animation','rating' => 8.5 ],
+            ['id' => 1, 'title' => 'Avengers: Endgame', 'genre' => 'Action', 'rating' => 8.4],
+            ['id' => 2, 'title' => 'Spider-Man: No Way Home', 'genre' => 'Action', 'rating' => 8.2],
+            ['id' => 3, 'title' => 'Inside Out', 'genre' => 'Animation', 'rating' => 8.1],
+            ['id' => 4, 'title' => 'Coco', 'genre' => 'Animation', 'rating' => 8.4],
+            ['id' => 5, 'title' => 'Interstellar', 'genre' => 'Sci-Fi', 'rating' => 8.7],
+            ['id' => 6, 'title' => 'The Lion King', 'genre' => 'Animation', 'rating' => 8.5],
         ];
     }
 
@@ -31,34 +31,34 @@ class MovieController extends Controller
         if (!isset($movies[$id - 1])) {
             abort(404);
         }
-         $movies = $movies[$id -1];
-        return view('movies.show', ['movie' =>$movies]);
+        $movies = $movies[$id - 1];
+        return view('movies.show', ['movie' => $movies]);
     }
     public function featured()
     {
         $movies = $this->getMovies();
-        $movies = $movies[0];
-       return view('movies.show', ['movie' => $movies]);
+        $featuredMovie = $movies[0];
+        return view('movies.featured', ['movie' => $featuredMovie]);
     }
     public function filter($genre = null)
     {
-    $movies = $this->getMovies();
+        $movies = $this->getMovies();
 
-    if ($genre !== null) {
-        $filteredMovies = [];
+        if ($genre !== null) {
+            $filteredMovies = [];
 
-        foreach ($movies as $movie) {
-            if ($movie['genre'] === $genre) {
-                $filteredMovies[] = $movie;
-         }
+            foreach ($movies as $movie) {
+                if ($movie['genre'] === $genre) {
+                    $filteredMovies[] = $movie;
+                }
+            }
+
+            $movies = $filteredMovies;
+        }
+
+        return view('movies.filter', [
+            'movies' => $movies,
+            'genre' => $genre
+        ]);
     }
-
-        $movies = $filteredMovies;
-    }
-
-         return view('movies.filter', [
-        'movies' => $movies,
-        'genre' => $genre
-    ]);
-  }
 }
