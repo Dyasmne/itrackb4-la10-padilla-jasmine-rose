@@ -24,41 +24,87 @@ class MovieController extends Controller
 
         return view('movies.index', ['movies' => $movies]);
     }
-    public function show($id)
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
         $movies = $this->getMovies();
 
-        if (!isset($movies[$id - 1])) {
+        if (!is_numeric($id) || !isset($movies[$id - 1])) {
             abort(404);
-        }
+    }
+    
         $movies = $movies[$id - 1];
+    
         return view('movies.show', ['movie' => $movies]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
     }
     public function featured()
     {
-        $movies = $this->getMovies();
-        $featuredMovie = $movies[0];
-        return view('movies.featured', ['movie' => $featuredMovie]);
-    }
+      $movies = $this->getMovies();
+      $featuredMovie = $movies[0];
+      return view('movies.featured', ['movie' => $featuredMovie]);
+    } 
+
     public function filter($genre = null)
-    {
-        $movies = $this->getMovies();
+{
+    $movies = $this->getMovies();
 
-        if ($genre !== null) {
-            $filteredMovies = [];
+    if ($genre !== null) {
+        $filteredMovies = [];
 
-            foreach ($movies as $movie) {
-                if ($movie['genre'] === $genre) {
-                    $filteredMovies[] = $movie;
-                }
+        foreach ($movies as $movie) {
+            if ($movie['genre'] === $genre) {
+                $filteredMovies[] = $movie;
             }
-
-            $movies = $filteredMovies;
         }
 
-        return view('movies.filter', [
-            'movies' => $movies,
-            'genre' => $genre
-        ]);
+        $movies = $filteredMovies;
     }
+
+        return view('movies.filter', [
+        'movies' => $movies,
+        'genre' => $genre]);
+ }
 }
