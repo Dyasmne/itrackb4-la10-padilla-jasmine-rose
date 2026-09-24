@@ -1,8 +1,7 @@
 @extends('layouts.app')
-
 @section('title', $movie['title'])
-
 @section('content')
+
     <div class="card" style="max-width: 400px;">
         <div class="card-body">
             <h5 class="card-title">{{ $movie['title'] }}</h5>
