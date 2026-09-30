@@ -6,7 +6,10 @@
 
 <h2>Movie List</h2>
 
-{{-- Active Filters --}}
+<a href="{{ route('movies.create') }}" class="btn btn-primary mb-3">
+    Add Movie
+</a>
+
 @if ($genre || $rating)
     <div class="alert alert-info">
         <strong>Active Filters:</strong>
@@ -29,7 +32,6 @@
     </div>
 @endif
 
-{{-- Genre Filters --}}
 <div class="mb-3">
     <strong>Filter by Genre:</strong>
 
@@ -58,7 +60,7 @@
     </a>
 </div>
 
-{{-- Rating Filters --}}
+
 <div class="mb-3">
     <strong>Filter by Rating:</strong>
 
@@ -87,7 +89,6 @@
     </a>
 </div>
 
-{{-- Clear All Filters --}}
 <div class="mb-4">
     <a href="{{ route('movies.index') }}"
        class="btn btn-secondary">
@@ -95,7 +96,7 @@
     </a>
 </div>
 
-{{-- Movie Table --}}
+
 <table class="table table-striped table-bordered">
 
     <thead>

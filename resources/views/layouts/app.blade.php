@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,11 +15,22 @@
 <div class="container">
 
     <h1 class="my-4 mb-0">My Movies</h1>
-    <p><strong>Jasmine Rose Padilla</strong></p>
-    
+
+    <p>
+        <strong>Jasmine Rose Padilla</strong>
+    </p>
+
     @include('partials._nav')
+
+    @if (session('success'))
+        <div class="alert alert-success mt-3">
+            {{ session('success') }}
+        </div>
+    @endif
+
     @yield('content')
 
 </div>
+
 </body>
 </html>

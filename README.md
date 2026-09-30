@@ -1,18 +1,14 @@
- ITRACKB4 Laboratory Activity 6
- Two Filters, One Route
+ ITRACKB4 Laboratory Activity 7
+ Let Them Add Someting
 
- Q1. You added a second filter without adding a single route. Explain why no new route was needed. Your answer should say something about what the router actually looks at.
+ Q1. Your form sends data with POST rather than GET. Explain what would go wrong if it used GET instead.
 
-No new route was needed because the router only looks at the URL path and HTTP method to decide which controller action to call. The second filter is handled inside the same controller method using the request/query data, so the URL route itself did not change.
+If the form used GET, the submitted data would be added to the URL as query parameters. This is not suitable for adding a new movie because the data would become visible in the browser address bar. When the browser is refreshed, it can repeat the GET request, which may cause the same action to happen again and create duplicate records. Using POST is better because the form data is sent in the request body.
 
- Q2. Suppose you had built both filters as route parameters instead. Describe what the URL for 'year 4 only, no course filter' would have to look like, and why.
+ Q2. When validation fails, your controller does not run the code that saves the record — and you did not write an if statement to stop it. Explain what actually stops it, and where the visitor ends up.
 
-The URL would need to include both route parameters in the required order. For example, if the pattern were /movies/{year}/{course}, then for year 4 only with no course filter, you would still need something like /movies/4/all (or another placeholder value). This is because route parameters are part of the URL pattern, so the second parameter cannot simply be left out.
+Laravel's `validate()` method automatically handles the validation. If the submitted data is invalid, Laravel stops the rest of the controller method before the saving code runs. It redirects the visitor back to the form and provides the validation errors and old input values, so the user can correct the fields.
 
-Q3. Your navigation link stays marked on a detail page and also when a filter is applied. Only one of those two needed a change to your pattern. Say which one, and why the other needed nothing.
+Q3. Your success message is displayed from the layout, which renders on every page. Explain why it does not appear on every page.
 
-TThe detail-page pattern needed the change. The navigation link could stay as it was because it already points to the correct movies.index route. The detail page needed its active-state pattern adjusted so it would not incorrectly mark the Movies navigation as active when viewing a specific movie.
-
-Q4. You deleted your old filter method but kept the empty store and update methods, even though none of the three can be reached by a URL. Explain the difference between them.
-
-the old filter method was deleted because it was no longer needed after moving the filtering logic into the existing index method. The empty store and update methods are different: they are controller methods reserved for resource-controller actions, even though no URL currently reaches them because the routes are filtered/limited.
+The layout checks for a `success` session value using `session('success')`. The message is only added to the session after a successful movie is saved using `with('success', ...)`. After the message is displayed, the session flash data is removed, so it does not continue appearing on other pages.

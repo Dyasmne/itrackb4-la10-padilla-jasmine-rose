@@ -8,14 +8,21 @@ class MovieController extends Controller
 {
     private function getMovies()
     {
-        return [
-            ['id' => 1,'title' => 'Avengers: Endgame','genre' => 'Action','rating' => 8.4],
-            ['id' => 2,'title' => 'Spider-Man: No Way Home','genre' => 'Action','rating' => 8.2],
-            ['id' => 3,'title' => 'Inside Out','genre' => 'Animation','rating' => 8.1],
-            ['id' => 4,'title' => 'Coco','genre' => 'Animation','rating' => 8.4],
-            ['id' => 5,'title' => 'Interstellar','genre' => 'Sci-Fi','rating' => 8.7],
-            ['id' => 6,'title' => 'The Lion King','genre' => 'Animation','rating' => 8.5],
-        ];
+        $path = storage_path('app/movies.json');
+
+        $json = file_get_contents($path);
+
+        return json_decode($json, true);
+    }
+
+    private function saveMovies($movies)
+    {
+        $path = storage_path('app/movies.json');
+
+        file_put_contents(
+            $path,
+            json_encode($movies, JSON_PRETTY_PRINT)
+        );
     }
 
     /**
@@ -23,21 +30,17 @@ class MovieController extends Controller
      */
     public function index(Request $request)
     {
-        // Get both filters from the query string
         $genre = $request->query('genre', null);
         $rating = $request->query('rating', null);
 
-        // Get all movies
         $movies = $this->getMovies();
 
-        // Apply genre filter
         if ($genre !== null) {
             $movies = array_filter($movies, function ($movie) use ($genre) {
                 return $movie['genre'] === $genre;
             });
         }
 
-        // Apply rating filter
         if ($rating !== null) {
             $movies = array_filter($movies, function ($movie) use ($rating) {
                 return $movie['rating'] >= (float) $rating;
@@ -56,7 +59,7 @@ class MovieController extends Controller
      */
     public function create()
     {
-        //
+        return view('movies.create');
     }
 
     /**
@@ -64,25 +67,47 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'id' => 'required|integer|min:1',
+            'title' => 'required|string|max:255',
+            'genre' => 'required|in:Action,Animation,Sci-Fi',
+            'rating' => 'required|numeric|min:0|max:10',
+        ]);
+
+        $movies = $this->getMovies();
+
+        $movies[] = $validated;
+
+        $this->saveMovies($movies);
+
+        return redirect()
+            ->route('movies.index')
+            ->with('success', 'Movie added successfully.');
     }
 
     /**
      * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $movies = $this->getMovies();
+     */public function show(string $id)
+{
+    $movies = $this->getMovies();
 
-        if (!is_numeric($id) || !isset($movies[$id - 1])) {
-            abort(404);
+    $movie = null;
+
+    foreach ($movies as $item) {
+        if ((int) $item['id'] === (int) $id) {
+            $movie = $item;
+            break;
         }
+    }
 
-        $movie = $movies[$id - 1];
+    if ($movie === null) {
+        abort(404);
+    }
 
-        return view('movies.show', [
-            'movie' => $movie
-        ]);
+    return view('movies.show', [
+        'movie' => $movie
+    ]);
+
     }
 
     /**
@@ -116,7 +141,7 @@ class MovieController extends Controller
     {
         $movies = $this->getMovies();
 
-        $featuredMovie = $movies[0];
+        $featuredMovie = $movies[1];
 
         return view('movies.featured', [
             'movie' => $featuredMovie
