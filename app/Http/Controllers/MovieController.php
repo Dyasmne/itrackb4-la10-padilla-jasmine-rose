@@ -3,59 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Movie;
 
 class MovieController extends Controller
 {
-    private function getMovies()
-    {
-        $path = storage_path('app/movies.json');
-
-        $json = file_get_contents($path);
-
-        return json_decode($json, true);
-    }
-
-    private function saveMovies($movies)
-    {
-        $path = storage_path('app/movies.json');
-
-        file_put_contents(
-            $path,
-            json_encode($movies, JSON_PRETTY_PRINT)
-        );
-    }
-
     /**
-     * Display a listing of the resource.
+     * Display movies from the database.
      */
     public function index(Request $request)
     {
-        $genre = $request->query('genre', null);
-        $rating = $request->query('rating', null);
+        $genre = $request->query('genre');
+        $rating = $request->query('rating');
 
-        $movies = $this->getMovies();
+        $query = Movie::query();
 
-        if ($genre !== null) {
-            $movies = array_filter($movies, function ($movie) use ($genre) {
-                return $movie['genre'] === $genre;
-            });
+        if ($genre !== null && $genre !== '') {
+            $query->where('genre', $genre);
         }
 
-        if ($rating !== null) {
-            $movies = array_filter($movies, function ($movie) use ($rating) {
-                return $movie['rating'] >= (float) $rating;
-            });
+        if ($rating !== null && $rating !== '') {
+            $query->where('rating', '>=', (float) $rating);
         }
+
+        $movies = $query->get();
 
         return view('movies.index', [
             'movies' => $movies,
             'genre' => $genre,
-            'rating' => $rating
+            'rating' => $rating,
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a movie.
      */
     public function create()
     {
@@ -63,22 +43,24 @@ class MovieController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a movie in the database.
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id' => 'required|integer|min:1',
             'title' => 'required|string|max:255',
             'genre' => 'required|in:Action,Animation,Sci-Fi',
             'rating' => 'required|numeric|min:0|max:10',
+            'is_available' => 'sometimes|boolean',
+            'release_year' => 'nullable|integer|min:1888|max:2100',
         ]);
 
-        $movies = $this->getMovies();
+        $validated['is_available'] = $request->boolean(
+            'is_available',
+            true
+        );
 
-        $movies[] = $validated;
-
-        $this->saveMovies($movies);
+        Movie::create($validated);
 
         return redirect()
             ->route('movies.index')
@@ -86,49 +68,27 @@ class MovieController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */public function show(string $id)
-{
-    $movies = $this->getMovies();
-
-    $movie = null;
-
-    foreach ($movies as $item) {
-        if ((int) $item['id'] === (int) $id) {
-            $movie = $item;
-            break;
-        }
-    }
-
-    if ($movie === null) {
-        abort(404);
-    }
-
-    return view('movies.show', [
-        'movie' => $movie
-    ]);
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Display a movie from the database.
      */
+    public function show(string $id)
+    {
+        $movie = Movie::findOrFail($id);
+
+        return view('movies.show', [
+            'movie' => $movie,
+        ]);
+    }
+
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //
@@ -139,12 +99,10 @@ class MovieController extends Controller
      */
     public function featured()
     {
-        $movies = $this->getMovies();
-
-        $featuredMovie = $movies[1];
+        $movie = Movie::findOrFail(2);
 
         return view('movies.featured', [
-            'movie' => $featuredMovie
+            'movie' => $movie,
         ]);
     }
 }

@@ -1,14 +1,13 @@
- ITRACKB4 Laboratory Activity 7
- Let Them Add Someting
+ ITRACKB4 Laboratory Activity 9
 
- Q1. Your form sends data with POST rather than GET. Explain what would go wrong if it used GET instead.
+F1. Which column did you make nullable, and why that one and not another?
 
-If the form used GET, the submitted data would be added to the URL as query parameters. This is not suitable for adding a new movie because the data would become visible in the browser address bar. When the browser is refreshed, it can repeat the GET request, which may cause the same action to happen again and create duplicate records. Using POST is better because the form data is sent in the request body.
+I made the release_year column nullable because a movie's release year may not always be available. The movie can still be saved even if its release year is unknown. I kept the other columns required because they contain important information about the movie.
 
- Q2. When validation fails, your controller does not run the code that saves the record — and you did not write an if statement to stop it. Explain what actually stops it, and where the visitor ends up.
+F2. Which step failed first for you, and what did the error say?
 
-Laravel's `validate()` method automatically handles the validation. If the submitted data is invalid, Laravel stops the rest of the controller method before the saving code runs. It redirects the visitor back to the form and provides the validation errors and old input values, so the user can correct the fields.
+The migration initially created the movies table without the required custom columns. When I checked the table structure, I noticed that the columns were missing. I rolled back the migration, updated the migration file, and ran the migration again to create the correct table structure.
 
-Q3. Your success message is displayed from the layout, which renders on every page. Explain why it does not appear on every page.
+F3. You changed no Blade file in Part D, yet your pages still work. Why not?
 
-The layout checks for a `success` session value using `session('success')`. The message is only added to the session after a successful movie is saved using `with('success', ...)`. After the message is displayed, the session flash data is removed, so it does not continue appearing on other pages.
+The Blade files still work because the controller passes the movie data to the views using the same variable names and structure expected by the templates. I changed the data source from the JSON file to the database, but I kept the view names and the data passed to the views consistent.
