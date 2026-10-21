@@ -3,22 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Movie extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'title',
-        'genre',
+        'genre_id',
         'rating',
         'is_available',
         'release_year',
     ];
 
-    protected function casts(): array
+    public function genre(): BelongsTo
     {
-        return [
-            'is_available' => 'boolean',
-            'release_year' => 'integer',
-        ];
+        return $this->belongsTo(Genre::class);
     }
 }

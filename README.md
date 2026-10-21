@@ -1,13 +1,10 @@
- ITRACKB4 Laboratory Activity 9
+ ITRACKB4 Laboratory Activity 10
 
-F1. Which column did you make nullable, and why that one and not another?
+G1: Which column did you turn into a table, and why that one and not another?
+I turned genre into its own table because it comes from a fixed list of values that repeat across many movies. If a genre ever needs its own details, like a description, it’s easy to add. Rating, release year, and availability describe each movie individually, so they stay as columns.
 
-I made the release_year column nullable because a movie's release year may not always be available. The movie can still be saved even if its release year is unknown. I kept the other columns required because they contain important information about the movie.
+G2: What number did screenshot 6 show, and why exactly that number?
+Screenshot 6 showed 7. There are 6 movies on the page. Without with(), Laravel runs one query to load the movies, then another query each time the view reads $movie->genre->name. That’s 1 + 6 = 7. The Genre::all() query for the filter links isn’t counted because it runs before the query log is turned on.
 
-F2. Which step failed first for you, and what did the error say?
-
-The migration initially created the movies table without the required custom columns. When I checked the table structure, I noticed that the columns were missing. I rolled back the migration, updated the migration file, and ran the migration again to create the correct table structure.
-
-F3. You changed no Blade file in Part D, yet your pages still work. Why not?
-
-The Blade files still work because the controller passes the movie data to the views using the same variable names and structure expected by the templates. I changed the data source from the JSON file to the database, but I kept the view names and the data passed to the views consistent.
+G3: Your belongsTo method is named in the singular. What would break if you made it plural?
+Eloquent uses the method name to figure out the foreign key column by adding _id. If I named it genres(), Laravel would look for a genres_id column, which doesn’t exist in my table. That would throw an SQL error, and the page would crash on the $movie->genre->name line.
